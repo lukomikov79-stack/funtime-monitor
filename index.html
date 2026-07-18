@@ -23,12 +23,17 @@
     </header>
 
     <main>
-        <div class="tabs">
+        <div class="tabs main-tabs">
             <button class="tab-btn active" data-tab="events">📊 События</button>
             <button class="tab-btn" data-tab="mines">⛏️ Шахты</button>
         </div>
 
         <div class="tab-content active" id="tab-events">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" data-subtab="open">🎁 Открытые</button>
+                <button class="sub-tab-btn" data-subtab="active">⚔️ Активные</button>
+                <button class="sub-tab-btn" data-subtab="upcoming">⏳ Скоро будут</button>
+            </div>
             <div class="events-grid" id="eventsContainer">
                 <div class="loading">Загрузка событий...</div>
             </div>

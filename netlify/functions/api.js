@@ -131,7 +131,7 @@ exports.handler = async () => {
                 });
             }
         }
-        events.sort((a, b) => a.seconds_left - b.seconds_left || (a.server < b.server ? -1 : 1));
+        events.sort((a, b) => b.loot_rarity - a.loot_rarity || a.seconds_left - b.seconds_left);
 
         const mines = [];
         for (const [server, ms] of Object.entries(minesData)) {

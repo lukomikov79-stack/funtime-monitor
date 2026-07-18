@@ -1,7 +1,8 @@
 const API_URL = '/.netlify/functions/api';
 const REFRESH_INTERVAL = 10000;
 
-let events = [], mines = [];
+let allEvents = [], allMines = [];
+let currentSubTab = 'open';
 
 const statusDot = document.getElementById('statusDot');
 const statusText = document.getElementById('statusText');
@@ -20,10 +21,9 @@ function resizeCanvas() {
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
-const ro = new ResizeObserver(() => {
+new ResizeObserver(() => {
     canvas.height = Math.max(window.innerHeight, document.documentElement.scrollHeight);
-});
-ro.observe(document.documentElement);
+}).observe(document.documentElement);
 
 class Particle {
     constructor() { this.reset(); }
@@ -46,12 +46,8 @@ class Particle {
         ctx.fill();
     }
 }
-
-function initParticles() {
-    const count = Math.min(Math.floor(canvas.width * canvas.height / 10000), 80);
-    particles = Array.from({ length: count }, () => new Particle());
-}
-initParticles();
+const count = Math.min(Math.floor(canvas.width * canvas.height / 10000), 80);
+particles = Array.from({ length: count }, () => new Particle());
 
 function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -75,13 +71,23 @@ function animateParticles() {
 }
 animateParticles();
 
-/* Tabs */
-document.querySelectorAll('.tab-btn').forEach(btn => {
+/* Main Tabs */
+document.querySelectorAll('.main-tabs .tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.main-tabs .tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+});
+
+/* Sub Tabs (Events) */
+document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSubTab = btn.dataset.subtab;
+        renderEvents();
     });
 });
 
@@ -103,13 +109,37 @@ function timeClass(s) {
     return 'green';
 }
 
+/* Filter events by sub-tab */
+function filterEvents(events) {
+    if (currentSubTab === 'open') {
+        return events.filter(e => e.phase_display === 'Сбор лута' || e.phase === 'LOOTING');
+    }
+    if (currentSubTab === 'upcoming') {
+        return events.filter(e =>
+            e.phase === 'WAITING' || e.phase === 'STARTING' || e.phase === 'ACTIVATING'
+        );
+    }
+    /* active — всё остальное с таймером > 0 */
+    return events.filter(e => e.seconds_left > 0 && e.phase !== 'LOOTING' && e.phase !== 'WAITING' && e.phase !== 'CLOSED');
+}
+
+/* Sort: по редкости (высшая -> низшая), потом по таймеру */
+function sortEvents(events) {
+    return events.sort((a, b) => {
+        if (b.loot_rarity !== a.loot_rarity) return b.loot_rarity - a.loot_rarity;
+        return a.seconds_left - b.seconds_left;
+    });
+}
+
 /* Render */
 function renderEvents() {
-    if (!events.length) {
-        eventsContainer.innerHTML = '<div class="no-data">✨ Нет активных событий</div>';
+    const filtered = sortEvents(filterEvents(allEvents));
+    if (!filtered.length) {
+        const msgs = { open: '🎁 Нет открытых событий', active: '⚔️ Нет активных событий', upcoming: '⏳ Нет предстоящих событий' };
+        eventsContainer.innerHTML = `<div class="no-data">${msgs[currentSubTab]}</div>`;
         return;
     }
-    eventsContainer.innerHTML = events.map(e => {
+    eventsContainer.innerHTML = filtered.map(e => {
         const tc = timeClass(e.seconds_left);
         const loot = e.loot && e.rarity_name && e.loot.toLowerCase() !== e.rarity_name.toLowerCase()
             ? ` <span class="event-loot" style="color:${e.rarity_color};border-color:${e.rarity_color}">${e.rarity_name}: ${e.loot}</span>`
@@ -129,11 +159,12 @@ function renderEvents() {
 }
 
 function renderMines() {
-    if (!mines.length) {
+    if (!allMines.length) {
         minesContainer.innerHTML = '<div class="no-data">⛏️ Нет данных о шахтах</div>';
         return;
     }
-    minesContainer.innerHTML = mines.map(m => {
+    allMines.sort((a, b) => a.reset_seconds - b.reset_seconds);
+    minesContainer.innerHTML = allMines.map(m => {
         const tc = timeClass(m.reset_seconds);
         return `<div class="mine-card" style="border-left:3px solid ${m.rarity_color}">
             <div class="rarity-icon">${m.rarity_emoji}</div>
@@ -152,8 +183,8 @@ function renderMines() {
 
 /* Countdown */
 function tick() {
-    for (const e of events) { if (e.seconds_left > 0) e.seconds_left--; }
-    for (const m of mines) { if (m.reset_seconds > 0) m.reset_seconds--; }
+    for (const e of allEvents) { if (e.seconds_left > 0) e.seconds_left--; }
+    for (const m of allMines) { if (m.reset_seconds > 0) m.reset_seconds--; }
     renderEvents();
     renderMines();
 }
@@ -166,8 +197,8 @@ async function fetchData() {
         const data = await res.json();
         if (data.status === 'ERROR') throw new Error(data.error || 'Unknown error');
 
-        events = data.events || [];
-        mines = data.mines || [];
+        allEvents = data.events || [];
+        allMines = data.mines || [];
 
         statusDot.className = 'status-dot online';
         statusText.textContent = 'Онлайн';
@@ -175,13 +206,13 @@ async function fetchData() {
 
         renderEvents();
         renderMines();
-        updateInfo.textContent = `Обновлено: ${new Date().toLocaleTimeString('ru-RU')} · событий: ${events.length} · шахт: ${mines.length}`;
+        updateInfo.textContent = `Обновлено: ${new Date().toLocaleTimeString('ru-RU')} · событий: ${allEvents.length} · шахт: ${allMines.length}`;
     } catch (err) {
         statusDot.className = 'status-dot';
         statusText.textContent = 'Ошибка';
         statusText.style.color = '#ff1744';
-        if (!events.length) eventsContainer.innerHTML = `<div class="no-data">⚠️ ${err.message}</div>`;
-        if (!mines.length) minesContainer.innerHTML = `<div class="no-data">⚠️ ${err.message}</div>`;
+        if (!allEvents.length) eventsContainer.innerHTML = `<div class="no-data">⚠️ ${err.message}</div>`;
+        if (!allMines.length) minesContainer.innerHTML = `<div class="no-data">⚠️ ${err.message}</div>`;
     }
 }
 
