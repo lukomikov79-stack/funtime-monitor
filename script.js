@@ -75,8 +75,8 @@ function switchTab(name) {
     $$('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + name));
 }
 
-document.getElementById('btnEvents').addEventListener('click', () => switchTab('events'));
-document.getElementById('btnMines').addEventListener('click', () => switchTab('mines'));
+document.getElementById('btnEvents').onclick = () => switchTab('events');
+document.getElementById('btnMines').onclick = () => switchTab('mines');
 
 $$('.sub-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -239,8 +239,8 @@ async function fetchData() {
         const sv = new Set();
         allEvents.forEach(e => sv.add(e.server));
         allMines.forEach(m => sv.add(m.server));
-        sc.textContent = `${sv.size} servers · ${allEvents.length} events · ${allMines.length} mines`;
-        updateInfo.textContent = `Updated ${new Date().toLocaleTimeString('ru-RU')}`;
+        sc.textContent = `${sv.size} серверов · ${allEvents.length} событий · ${allMines.length} шахт`;
+        updateInfo.textContent = `Обновлено ${new Date().toLocaleTimeString('ru-RU')}`;
 
         if (!same) {
             renderEvents();
