@@ -150,15 +150,18 @@ function renderEvents() {
     }
     eventsContainer.innerHTML = filtered.map(e => {
         const tc = timeClass(e.seconds_left);
-        const loot = e.loot && e.rarity_name && e.loot.toLowerCase() !== e.rarity_name.toLowerCase()
+        const hasLoot = e.loot && e.loot !== 'null';
+        const lootBadge = hasLoot && e.rarity_name && e.loot.toLowerCase() !== e.rarity_name.toLowerCase()
             ? ` <span class="event-loot" style="color:${e.rarity_color};border-color:${e.rarity_color}">${e.rarity_name}: ${e.loot}</span>`
-            : e.loot
+            : hasLoot
                 ? ` <span class="event-loot" style="color:${e.rarity_color};border-color:${e.rarity_color}">${e.loot}</span>`
                 : '';
-        return `<div class="event-card" style="border-left-color:${e.rarity_color}">
-            <div class="rarity-icon">${e.rarity_emoji}</div>
+        const icon = hasLoot ? e.rarity_emoji : '⚪';
+        const borderColor = hasLoot ? e.rarity_color : 'var(--border)';
+        return `<div class="event-card" style="border-left-color:${borderColor}">
+            <div class="rarity-icon">${icon}</div>
             <div class="event-server">${e.server}</div>
-            <div><span class="event-name">${e.event_name}</span>${loot}</div>
+            <div><span class="event-name">${e.event_name}</span>${lootBadge}</div>
             <div class="event-time ${tc}">
                 <div class="seconds">${fmtTime(e.seconds_left)}</div>
                 <div class="timer">${e.phase_display}</div>
