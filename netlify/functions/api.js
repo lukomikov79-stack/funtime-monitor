@@ -88,7 +88,7 @@ function lootRarity(loot) {
 }
 
 const PHASES = {
-    waiting: 'Ожидание', activating: 'Активация', starting: 'Запуск',
+    waiting: 'Ожидание', activating: 'Активация', starting: 'Старт',
     active: 'Активна', running: 'Запущено', looting: 'Сбор лута',
     closed: 'Закрыто', ending: 'Завершается', finished: 'Завершено'
 };

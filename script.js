@@ -110,17 +110,23 @@ function timeClass(s) {
 }
 
 /* Filter events by sub-tab */
+/* ACTIVATING / RUNNING / LOOTING — ивент активен, можно лутать */
+/* STARTING — скоро старт, время идёт */
+/* WAITING — ожидание спавна */
+/* CLOSED / FINISHED — лут недоступен, скоро удалится — не показываем */
 function filterEvents(events) {
+    const filtered = events.filter(e => e.phase !== 'CLOSED' && e.phase !== 'FINISHED');
+
     if (currentSubTab === 'open') {
-        return events.filter(e => e.phase_display === 'Сбор лута' || e.phase === 'LOOTING');
-    }
-    if (currentSubTab === 'upcoming') {
-        return events.filter(e =>
-            e.phase === 'WAITING' || e.phase === 'STARTING' || e.phase === 'ACTIVATING'
+        return filtered.filter(e =>
+            e.phase === 'ACTIVATING' || e.phase === 'RUNNING' || e.phase === 'LOOTING'
         );
     }
-    /* active — всё остальное с таймером > 0 */
-    return events.filter(e => e.seconds_left > 0 && e.phase !== 'LOOTING' && e.phase !== 'WAITING' && e.phase !== 'CLOSED');
+    if (currentSubTab === 'upcoming') {
+        return filtered.filter(e => e.phase === 'WAITING');
+    }
+    /* active — STARTING */
+    return filtered.filter(e => e.phase === 'STARTING');
 }
 
 /* Sort: по редкости (высшая -> низшая), потом по таймеру */
