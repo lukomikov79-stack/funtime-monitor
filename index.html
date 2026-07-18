@@ -2,9 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FUNTIME — Монитор</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>FUNTIME Monitor</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2334c759'/><text x='50' y='68' font-size='50' text-anchor='middle' fill='white' font-weight='700'>F</text></svg>" />
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,44 +13,50 @@
 
     <header>
         <div class="logo">
-            <span class="logo-fun">FUN</span><span class="logo-time">TIME</span>
+            FUN<span class="logo-time">TIME</span>
         </div>
-        <p class="subtitle">мониторинг анархии</p>
-        <div class="status-bar">
-            <span class="status-dot" id="statusDot"></span>
-            <span id="statusText">Загрузка...</span>
+        <div class="header-sub">
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Загрузка...</span>
+            </div>
+            <span class="server-count" id="serverCount"></span>
         </div>
     </header>
 
     <main>
-        <div class="tabs main-tabs">
-            <button class="tab-btn active" data-tab="events">📊 События</button>
-            <button class="tab-btn" data-tab="mines">⛏️ Шахты</button>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="events">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                События
+            </button>
+            <button class="tab-btn" data-tab="mines">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                Шахты
+            </button>
         </div>
 
         <div class="tab-content active" id="tab-events">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" data-subtab="open">🎁 Открытые</button>
-                <button class="sub-tab-btn" data-subtab="active">⚔️ Активные</button>
-                <button class="sub-tab-btn" data-subtab="upcoming">⏳ Скоро будут</button>
+                <button class="sub-tab-btn active" data-subtab="open">Открытые</button>
+                <button class="sub-tab-btn" data-subtab="active">Активные</button>
+                <button class="sub-tab-btn" data-subtab="upcoming">Скоро будут</button>
             </div>
             <div class="events-grid" id="eventsContainer">
-                <div class="loading">Загрузка событий...</div>
+                <div class="loading">Загрузка...</div>
             </div>
         </div>
 
         <div class="tab-content" id="tab-mines">
             <div class="mines-grid" id="minesContainer">
-                <div class="loading">Загрузка шахт...</div>
+                <div class="loading">Загрузка...</div>
             </div>
         </div>
 
         <div class="update-info" id="updateInfo"></div>
     </main>
 
-    <footer>
-        <p>FUNTIME Anarchy Server &copy; 2026</p>
-    </footer>
+    <footer>FUNTIME Anarchy</footer>
 
     <script src="script.js"></script>
 </body>

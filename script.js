@@ -42,7 +42,7 @@ class Particle {
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(108, 65, 255, ${this.o})`;
+        ctx.fillStyle = `rgba(52, 199, 89, ${this.o})`;
         ctx.fill();
     }
 }
@@ -61,7 +61,7 @@ function animateParticles() {
                 ctx.beginPath();
                 ctx.moveTo(particles[i].x, particles[i].y);
                 ctx.lineTo(particles[j].x, particles[j].y);
-                ctx.strokeStyle = `rgba(108, 65, 255, ${0.04 * (1 - Math.sqrt(d) / 150)})`;
+                ctx.strokeStyle = `rgba(52, 199, 89, ${0.04 * (1 - Math.sqrt(d) / 150)})`;
                 ctx.lineWidth = 0.5;
                 ctx.stroke();
             }
@@ -132,6 +132,15 @@ function filterEvents(events) {
     );
 }
 
+/* Сокращение редкости для иконки */
+function rarityShort(name) {
+    if (!name) return '—';
+    const map = { 'легендарный': 'Л', 'легендарная': 'Л', 'элитный': 'Э', 'богатый': 'Б',
+        'солидный': 'С', 'мифический': 'М', 'мифическая': 'М', 'эпический': 'Е',
+        'эпическая': 'Е', 'редкий': 'Р', 'редкая': 'Р', 'обычная': '—', 'обычный': '—' };
+    return map[name.toLowerCase()] || name[0] || '?';
+}
+
 /* Sort: по редкости (высшая -> низшая), потом по таймеру */
 function sortEvents(events) {
     return events.sort((a, b) => {
@@ -156,10 +165,10 @@ function renderEvents() {
             : hasLoot
                 ? ` <span class="event-loot" style="color:${e.rarity_color};border-color:${e.rarity_color}">${e.loot}</span>`
                 : '';
-        const icon = hasLoot ? e.rarity_emoji : '⚪';
-        const borderColor = hasLoot ? e.rarity_color : 'var(--border)';
-        return `<div class="event-card" style="border-left-color:${borderColor}">
-            <div class="rarity-icon">${icon}</div>
+        const iconColor = hasLoot ? e.rarity_color : 'rgba(255,255,255,0.08)';
+        const iconText = hasLoot ? rarityShort(e.rarity_name) : '';
+        return `<div class="event-card">
+            <div class="rarity-icon" style="background:${iconColor}15;color:${iconColor}">${iconText}</div>
             <div class="event-server">${e.server}</div>
             <div><span class="event-name">${e.event_name}</span>${lootBadge}</div>
             <div class="event-time ${tc}">
@@ -178,12 +187,13 @@ function renderMines() {
     allMines.sort((a, b) => a.reset_seconds - b.reset_seconds);
     minesContainer.innerHTML = allMines.map(m => {
         const tc = timeClass(m.reset_seconds);
-        return `<div class="mine-card" style="border-left:3px solid ${m.rarity_color}">
-            <div class="rarity-icon">${m.rarity_emoji}</div>
+        const nextShort = rarityShort(m.next_name);
+        return `<div class="mine-card">
+            <div class="rarity-icon" style="background:${m.rarity_color}15;color:${m.rarity_color}">${rarityShort(m.rarity_name)}</div>
             <div class="mine-server">${m.server}</div>
             <div>
                 <span class="mine-rarity" style="color:${m.rarity_color};border-color:${m.rarity_color}">${m.rarity_name}</span>
-                <div class="mine-next">Следующая: ${m.next_emoji} ${m.next_name}</div>
+                <div class="mine-next">→ ${nextShort} ${m.next_name}</div>
             </div>
             <div class="mine-time ${tc}">
                 <div class="sec">${fmtTime(m.reset_seconds)}</div>
@@ -213,18 +223,23 @@ async function fetchData() {
         allMines = data.mines || [];
 
         statusDot.className = 'status-dot online';
-        statusText.textContent = 'Онлайн';
-        statusText.style.color = '#00e676';
+        statusText.textContent = 'Online';
+        statusText.style.color = '#34c759';
+
+        const servers = new Set();
+        allEvents.forEach(e => servers.add(e.server));
+        allMines.forEach(m => servers.add(m.server));
+        document.getElementById('serverCount').textContent = `${servers.size} servers · ${allEvents.length} events · ${allMines.length} mines`;
 
         renderEvents();
         renderMines();
-        updateInfo.textContent = `Обновлено: ${new Date().toLocaleTimeString('ru-RU')} · событий: ${allEvents.length} · шахт: ${allMines.length}`;
+        updateInfo.textContent = `Updated ${new Date().toLocaleTimeString('ru-RU')}`;
     } catch (err) {
         statusDot.className = 'status-dot';
-        statusText.textContent = 'Ошибка';
-        statusText.style.color = '#ff1744';
-        if (!allEvents.length) eventsContainer.innerHTML = `<div class="no-data">⚠️ ${err.message}</div>`;
-        if (!allMines.length) minesContainer.innerHTML = `<div class="no-data">⚠️ ${err.message}</div>`;
+        statusText.textContent = 'Offline';
+        statusText.style.color = '#ff3b30';
+        if (!allEvents.length) eventsContainer.innerHTML = `<div class="no-data">${err.message}</div>`;
+        if (!allMines.length) minesContainer.innerHTML = `<div class="no-data">${err.message}</div>`;
     }
 }
 
