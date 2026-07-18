@@ -92,7 +92,7 @@ function lootRarity(loot) {
 }
 
 const PHASES = {
-    waiting: 'Ожидание', activating: 'Активация', starting: 'Старт',
+    opened: 'Открыто', waiting: 'Ожидание', activating: 'Активация', starting: 'Старт',
     active: 'Активна', running: 'Запущено', looting: 'Сбор лута',
     closed: 'Закрыто', ending: 'Завершается', finished: 'Завершено'
 };
@@ -103,9 +103,9 @@ function phaseInfo(p) {
 
 const EVENT_NAMES = {
     vulkan: 'Вулкан', airdrop: 'Airdrop', myst_beacon: 'Мистический маяк',
-    mystery_beacon: 'Мистический маяк', hellm: 'HELLM', deathchest: 'Сундук смерти',
-    meteor_rain: 'Метеоритный дождь', altarundead: 'Алтарь нежити',
-    epic_mob: 'Эпический моб', raid: 'Рейд'
+    mystery_beacon: 'Мистический маяк', beacon: 'Маяк', hellm: 'HELLM',
+    deathchest: 'Сундук смерти', meteor_rain: 'Метеоритный дождь',
+    altarundead: 'Алтарь нежити', epic_mob: 'Эпический моб', raid: 'Рейд'
 };
 
 exports.handler = async () => {

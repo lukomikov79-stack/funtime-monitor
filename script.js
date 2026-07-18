@@ -109,24 +109,27 @@ function timeClass(s) {
     return 'green';
 }
 
-/* Filter events by sub-tab */
-/* ACTIVATING / RUNNING / LOOTING — ивент активен, можно лутать */
-/* STARTING — скоро старт, время идёт */
-/* WAITING — ожидание спавна */
-/* CLOSED / FINISHED — лут недоступен, скоро удалится — не показываем */
+/* Фильтр по вкладкам */
+/* 🎁 Открытые — OPENED / ACTIVATING / RUNNING / LOOTING (лутабельные) */
+/* ⚔️ Активные — STARTING / system события без фазы (скоро старт) */
+/* ⏳ Скоро будут — WAITING */
+/* CLOSED / FINISHED — не показываем */
 function filterEvents(events) {
     const filtered = events.filter(e => e.phase !== 'CLOSED' && e.phase !== 'FINISHED');
 
     if (currentSubTab === 'open') {
         return filtered.filter(e =>
-            e.phase === 'ACTIVATING' || e.phase === 'RUNNING' || e.phase === 'LOOTING'
+            e.phase === 'OPENED' || e.phase === 'ACTIVATING' ||
+            e.phase === 'RUNNING' || e.phase === 'LOOTING'
         );
     }
     if (currentSubTab === 'upcoming') {
         return filtered.filter(e => e.phase === 'WAITING');
     }
-    /* active — STARTING */
-    return filtered.filter(e => e.phase === 'STARTING');
+    /* active — STARTING или без фазы (системные таймеры) */
+    return filtered.filter(e =>
+        e.phase === 'STARTING' || e.phase === '' || e.phase === '—'
+    );
 }
 
 /* Sort: по редкости (высшая -> низшая), потом по таймеру */
