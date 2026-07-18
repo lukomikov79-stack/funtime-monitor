@@ -163,8 +163,8 @@ function renderEvents() {
             <div class="event-server">${e.server}</div>
             <div><span class="event-name">${e.event_name}</span>${lootBadge}</div>
             <div class="event-time ${tc}">
-                <div class="seconds">${fmtTime(e.seconds_left)}</div>
-                <div class="timer">${e.phase_display}</div>
+                <div class="sec">${fmtTime(e.seconds_left)}</div>
+                <div class="lbl">${e.phase_display}</div>
             </div>
         </div>`;
     }).join('');
@@ -186,8 +186,8 @@ function renderMines() {
                 <div class="mine-next">Следующая: ${m.next_emoji} ${m.next_name}</div>
             </div>
             <div class="mine-time ${tc}">
-                <div class="seconds">${fmtTime(m.reset_seconds)}</div>
-                <div class="timer">до сброса</div>
+                <div class="sec">${fmtTime(m.reset_seconds)}</div>
+                <div class="lbl">до сброса</div>
             </div>
         </div>`;
     }).join('');
