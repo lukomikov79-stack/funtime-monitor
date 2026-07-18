@@ -201,15 +201,20 @@ function renderMines() {
     }).join('');
 }
 
-/* ---- Tick ---- */
+/* ---- Tick (только время, без перерисовки) ---- */
 function tick() {
     for (const e of allEvents) if (e.seconds_left > 0) e.seconds_left--;
     for (const m of allMines) if (m.reset_seconds > 0) m.reset_seconds--;
-    renderEvents();
-    renderMines();
+
+    document.querySelectorAll('.event-card .sec').forEach((el, i) => {
+        if (allEvents[i]) el.textContent = fmt(allEvents[i].seconds_left);
+    });
+    document.querySelectorAll('.mine-card .sec').forEach((el, i) => {
+        if (allMines[i]) el.textContent = fmt(allMines[i].reset_seconds);
+    });
 }
 
-/* ---- Fetch ---- */
+/* ---- Fetch (с сохранением скролла) ---- */
 async function fetchData() {
     try {
         const res = await fetch(API_URL, { headers: { 'Accept': 'application/json' } });
@@ -217,8 +222,14 @@ async function fetchData() {
         const d = await res.json();
         if (d.status === 'ERROR') throw new Error(d.error || 'Unknown');
 
-        allEvents = d.events || [];
-        allMines = d.mines || [];
+        const newEvents = d.events || [];
+        const newMines = d.mines || [];
+
+        const same = JSON.stringify(newEvents) === JSON.stringify(allEvents)
+                  && JSON.stringify(newMines) === JSON.stringify(allMines);
+
+        allEvents = newEvents;
+        allMines = newMines;
 
         const sd = $('#statusDot'), st = $('#statusText'), sc = $('#serverCount');
         sd.className = 'status-dot online';
@@ -229,10 +240,12 @@ async function fetchData() {
         allEvents.forEach(e => sv.add(e.server));
         allMines.forEach(m => sv.add(m.server));
         sc.textContent = `${sv.size} servers · ${allEvents.length} events · ${allMines.length} mines`;
-
-        renderEvents();
-        renderMines();
         updateInfo.textContent = `Updated ${new Date().toLocaleTimeString('ru-RU')}`;
+
+        if (!same) {
+            renderEvents();
+            renderMines();
+        }
     } catch (err) {
         const sd = $('#statusDot'), st = $('#statusText');
         sd.className = 'status-dot';
