@@ -67,11 +67,13 @@ async function fetchEndpoint(endpoint, paramName, batchParam) {
 
 const RARITY = {
     default: { c: '#808080', e: '⚪', n: 'Обычная', v: 0 },
+    solid: { c: '#888888', e: '🟤', n: 'Солидный', v: 1 },
+    rich: { c: '#ccaa00', e: '🟡', n: 'Богатый', v: 2 },
+    elite: { c: '#aa00ff', e: '🟣', n: 'Элитный', v: 3 },
+    legendary: { c: '#ff8800', e: '🟠', n: 'Легендарный', v: 4 },
     rare: { c: '#00ff00', e: '🟢', n: 'Редкая', v: 1 },
     epic: { c: '#0088ff', e: '🔵', n: 'Эпическая', v: 2 },
-    mythical: { c: '#ff0000', e: '🔴', n: 'Мифическая', v: 3 },
-    legendary: { c: '#ff8800', e: '🟠', n: 'Легендарная', v: 4 },
-    elite: { c: '#aa00ff', e: '🟣', n: 'Элитный', v: 5 }
+    mythical: { c: '#ff0000', e: '🔴', n: 'Мифическая', v: 3 }
 };
 
 function rar(r) { return RARITY[r] || RARITY.default; }
@@ -79,11 +81,13 @@ function rar(r) { return RARITY[r] || RARITY.default; }
 function lootRarity(loot) {
     if (!loot || loot === 'null') return RARITY.default;
     const l = loot.toLowerCase();
-    if (l.includes('элит') || l.includes('elite')) return RARITY.elite;
-    if (l.includes('мифич') || l.includes('mythic')) return RARITY.mythical;
     if (l.includes('легенд') || l.includes('legend')) return RARITY.legendary;
-    if (l.includes('эпик') || l.includes('epic')) return RARITY.epic;
-    if (l.includes('редк') || l.includes('rare')) return RARITY.rare;
+    if (l.includes('элит') || l.includes('elite')) return RARITY.elite;
+    if (l.includes('богат') || l.includes('rich')) return RARITY.rich;
+    if (l.includes('солид') || l.includes('solid')) return RARITY.solid;
+    if (l.includes('мифич') || l.includes('mythic')) return { c: '#ff0000', e: '🔴', n: 'Мифический', v: 0 };
+    if (l.includes('эпик') || l.includes('epic')) return { c: '#0088ff', e: '🔵', n: 'Эпический', v: 0 };
+    if (l.includes('редк') || l.includes('rare')) return { c: '#00ff00', e: '🟢', n: 'Редкий', v: 0 };
     return { c: '#888', e: '⚪', n: loot, v: 0 };
 }
 
