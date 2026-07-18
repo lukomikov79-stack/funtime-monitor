@@ -70,23 +70,21 @@ const pts = Array.from({ length: Math.min(Math.floor(canvas.width * canvas.heigh
 })();
 
 /* ---- Tab switching ---- */
-document.addEventListener('click', e => {
-    const tabBtn = e.target.closest('.main-tabs .tab-btn');
-    if (tabBtn) {
-        $$('.main-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-        $$('.tab-content').forEach(c => c.classList.remove('active'));
-        tabBtn.classList.add('active');
-        const el = document.getElementById('tab-' + tabBtn.dataset.tab);
-        if (el) el.classList.add('active');
-    }
+function switchTab(name) {
+    $$('.main-tabs .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    $$('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + name));
+}
 
-    const subBtn = e.target.closest('.sub-tab-btn');
-    if (subBtn) {
+document.getElementById('btnEvents').addEventListener('click', () => switchTab('events'));
+document.getElementById('btnMines').addEventListener('click', () => switchTab('mines'));
+
+$$('.sub-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
         $$('.sub-tab-btn').forEach(b => b.classList.remove('active'));
-        subBtn.classList.add('active');
-        currentSubTab = subBtn.dataset.subtab;
+        btn.classList.add('active');
+        currentSubTab = btn.dataset.subtab;
         renderEvents();
-    }
+    });
 });
 
 /* ---- Formatting ---- */
