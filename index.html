@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FUNTIME — Монитор</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+    <canvas id="particles"></canvas>
+
+    <header>
+        <div class="logo">
+            <span class="logo-fun">FUN</span><span class="logo-time">TIME</span>
+        </div>
+        <p class="subtitle">мониторинг анархии</p>
+        <div class="status-bar">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Загрузка...</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="events">📊 События</button>
+            <button class="tab-btn" data-tab="mines">⛏️ Шахты</button>
+        </div>
+
+        <div class="tab-content active" id="tab-events">
+            <div class="events-grid" id="eventsContainer">
+                <div class="loading">Загрузка событий...</div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-mines">
+            <div class="mines-grid" id="minesContainer">
+                <div class="loading">Загрузка шахт...</div>
+            </div>
+        </div>
+
+        <div class="update-info" id="updateInfo"></div>
+    </main>
+
+    <footer>
+        <p>FUNTIME Anarchy Server &copy; 2026</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
