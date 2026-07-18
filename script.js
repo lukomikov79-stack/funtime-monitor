@@ -88,9 +88,12 @@ $$('.sub-tab-btn').forEach(btn => {
 });
 
 /* ---- Formatting ---- */
-function fmt(s) {
+function fmt(s, phase) {
     if (s == null || s < 0) return '—';
-    if (s === 0) return 'сейчас';
+    if (s === 0) {
+        if (phase === 'LOOTING') return 'сейчас';
+        return '—';
+    }
     const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
     if (h > 0) return `${h}ч ${String(m).padStart(2,'0')}м`;
     if (m > 0) return `${m}м ${String(sec).padStart(2,'0')}с`;
@@ -170,7 +173,7 @@ function renderEvents() {
             <div class="event-server">${e.server}</div>
             <div><span class="event-name">${e.event_name}</span>${badge}</div>
             <div class="event-time ${t}">
-                <div class="sec">${fmt(e.seconds_left)}</div>
+                <div class="sec">${fmt(e.seconds_left, e.phase)}</div>
                 <div class="lbl">${e.phase_display}</div>
             </div>
         </div>`;
@@ -194,7 +197,7 @@ function renderMines() {
                 <div class="mine-next">→ ${next} ${m.next_name}</div>
             </div>
             <div class="mine-time ${t}">
-                <div class="sec">${fmt(m.reset_seconds)}</div>
+                <div class="sec">${fmt(m.reset_seconds, '')}</div>
                 <div class="lbl">до сброса</div>
             </div>
         </div>`;
@@ -207,10 +210,10 @@ function tick() {
     for (const m of allMines) if (m.reset_seconds > 0) m.reset_seconds--;
 
     document.querySelectorAll('.event-card .sec').forEach((el, i) => {
-        if (allEvents[i]) el.textContent = fmt(allEvents[i].seconds_left);
+        if (allEvents[i]) el.textContent = fmt(allEvents[i].seconds_left, allEvents[i].phase);
     });
     document.querySelectorAll('.mine-card .sec').forEach((el, i) => {
-        if (allMines[i]) el.textContent = fmt(allMines[i].reset_seconds);
+        if (allMines[i]) el.textContent = fmt(allMines[i].reset_seconds, '');
     });
 }
 
