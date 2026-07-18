@@ -110,25 +110,25 @@ function timeClass(s) {
 }
 
 /* Фильтр по вкладкам */
-/* 🎁 Открытые — OPENED / ACTIVATING / RUNNING / LOOTING (лутабельные) */
-/* ⚔️ Активные — STARTING / system события без фазы (скоро старт) */
-/* ⏳ Скоро будут — WAITING */
+/* 🎁 Открытые — LOOTING (лут доступен прямо сейчас) */
+/* ⚔️ Активные — OPENED / ACTIVATING / RUNNING (ивент идёт, можно лутать) */
+/* ⏳ Скоро будут — STARTING / WAITING (скоро начнётся) */
 /* CLOSED / FINISHED — не показываем */
 function filterEvents(events) {
     const filtered = events.filter(e => e.phase !== 'CLOSED' && e.phase !== 'FINISHED');
 
     if (currentSubTab === 'open') {
-        return filtered.filter(e =>
-            e.phase === 'OPENED' || e.phase === 'ACTIVATING' ||
-            e.phase === 'RUNNING' || e.phase === 'LOOTING'
-        );
+        return filtered.filter(e => e.phase === 'LOOTING');
     }
     if (currentSubTab === 'upcoming') {
-        return filtered.filter(e => e.phase === 'WAITING');
+        return filtered.filter(e =>
+            e.phase === 'STARTING' || e.phase === 'WAITING' ||
+            e.phase === '' || e.phase === '—'
+        );
     }
-    /* active — STARTING или без фазы (системные таймеры) */
+    /* active — OPENED / ACTIVATING / RUNNING */
     return filtered.filter(e =>
-        e.phase === 'STARTING' || e.phase === '' || e.phase === '—'
+        e.phase === 'OPENED' || e.phase === 'ACTIVATING' || e.phase === 'RUNNING'
     );
 }
 
